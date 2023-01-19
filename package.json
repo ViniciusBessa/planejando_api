@@ -4,6 +4,8 @@
   "description": "Uma API para planejamento financeiro",
   "main": "server.ts",
   "scripts": {
+    "start": "node ./dist/server.js",
+    "dev": "tsnd --files server.ts",
     "test": "jest"
   },
   "repository": {
@@ -17,14 +19,19 @@
   },
   "homepage": "https://github.com/ViniciusBessa/planejando_api#readme",
   "dependencies": {
+    "@prisma/client": "^4.9.0",
+    "bcrypt": "^5.1.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "http-status-codes": "^2.2.0",
+    "jsonwebtoken": "^9.0.0",
     "typescript": "^4.9.4"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.15",
+    "@types/jsonwebtoken": "^9.0.1",
     "@types/node": "^18.11.18",
     "jest": "^29.3.1",
     "prisma": "^4.9.0",

@@ -9,3 +9,75 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(40)
+  email     String   @unique @db.VarChar(80)
+  password  String   @db.VarChar(300)
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Revenue Revenue[]
+  Goal    Goal[]
+  Expense Expense[]
+
+  @@map("users")
+}
+
+model Expense {
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId  Int
+  value       Decimal  @db.Decimal(16, 2)
+  description String   @db.VarChar(200)
+  isEssential Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("expenses")
+}
+
+model Goal {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId Int
+  value      Decimal  @db.Decimal(16, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("goals")
+}
+
+model Revenue {
+  id     Int     @id @default(autoincrement())
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  value  Decimal @db.Decimal(16, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("revenues")
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  title       String    @db.VarChar(60)
+  description String    @db.VarChar(200)
+  Goal        Goal[]
+  Expense     Expense[]
+
+  @@map("categories")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
