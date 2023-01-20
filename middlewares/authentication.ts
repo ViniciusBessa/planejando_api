@@ -14,7 +14,7 @@ const authMiddleware = async (
     const { authorization } = req.headers;
 
     // If there is no value in authorization value, just continue with the user not authenticated
-    if (!authorization) {
+    if (!authorization || !authorization.startsWith('Bearer ')) {
       return next();
     }
 

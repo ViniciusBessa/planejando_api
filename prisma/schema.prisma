@@ -19,9 +19,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Revenue Revenue[]
-  Goal    Goal[]
-  Expense Expense[]
+  revenues Revenue[]
+  goals    Goal[]
+  expenses Expense[]
 
   @@map("users")
 }
@@ -48,19 +48,17 @@ model Goal {
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId Int
   value      Decimal  @db.Decimal(16, 2)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@map("goals")
 }
 
 model Revenue {
-  id     Int     @id @default(autoincrement())
-  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int
-  value  Decimal @db.Decimal(16, 2)
-
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  value     Decimal  @db.Decimal(16, 2)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -68,11 +66,14 @@ model Revenue {
 }
 
 model Category {
-  id          Int       @id @default(autoincrement())
-  title       String    @db.VarChar(60)
-  description String    @db.VarChar(200)
-  Goal        Goal[]
-  Expense     Expense[]
+  id          Int      @id @default(autoincrement())
+  title       String   @unique @db.VarChar(60)
+  description String   @db.VarChar(200)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  goals    Goal[]
+  expenses Expense[]
 
   @@map("categories")
 }

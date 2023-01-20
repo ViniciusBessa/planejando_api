@@ -55,16 +55,24 @@ const updateCategory = asyncWrapper(
         'Por favor, informe um novo título ou descrição para a categoria'
       );
     }
+
+    // Checking if the category exists in the database
+    const category = await prisma.category.findFirst({
+      where: { id: Number(categoryId) },
+    });
+
+    if (!category) {
+      throw new NotFoundError(
+        `Nenhuma categoria foi encontrada com o id ${categoryId}`
+      );
+    }
+
+    // Updating the category
     const updatedCategory = await prisma.category.update({
       where: { id: Number(categoryId) },
       data: { title, description },
     });
 
-    if (!updatedCategory) {
-      throw new NotFoundError(
-        `Nenhuma categoria foi encontrada com o id ${categoryId}`
-      );
-    }
     return res.status(StatusCodes.OK).json({ category: updatedCategory });
   }
 );
@@ -72,16 +80,23 @@ const updateCategory = asyncWrapper(
 const deleteCategory = asyncWrapper(
   async (req: Request, res: Response, next: NextFunction) => {
     const { categoryId } = req.params;
-    const deletedCategory = await prisma.category.delete({
+
+    // Checking if the category exists in the database
+    const category = await prisma.category.findFirst({
       where: { id: Number(categoryId) },
     });
 
-    if (!deletedCategory) {
+    if (!category) {
       throw new NotFoundError(
         `Nenhuma categoria foi encontrada com o id ${categoryId}`
       );
     }
-    return res.status(StatusCodes.OK).json({ category: deletedCategory });
+
+    // Deleting the category
+    await prisma.category.delete({
+      where: { id: Number(categoryId) },
+    });
+    return res.status(StatusCodes.OK).json({ category });
   }
 );
 

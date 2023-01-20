@@ -64,7 +64,10 @@ const createExpense = asyncWrapper(
       throw new BadRequestError(
         'Por favor, informe o valor e a descrição da despesa'
       );
+    } else if (!categoryId) {
+      throw new BadRequestError('Por favor, informe a categoria da despesa');
     }
+
     // Checking if the category is on the database
     const category = await prisma.category.findFirst({
       where: { id: categoryId },
@@ -81,7 +84,8 @@ const createExpense = asyncWrapper(
         category: { connect: { id: categoryId } },
         value,
         description,
-        isEssential,
+        isEssential:
+          isEssential !== undefined ? Boolean(isEssential) : undefined,
       },
       include: { category: true, user: false },
     });
@@ -107,8 +111,8 @@ const updateExpense = asyncWrapper(
         `Nenhuma despesa foi encontrada com o id ${expenseId}`
       );
     }
-    // Checking if the requesting user is an admin or the user who created the expense
-    if (user.role !== Role.ADMIN && expense.userId !== user.id) {
+    // Checking if the requesting created the expense
+    if (expense.userId !== user.id) {
       throw new ForbiddenError(
         'Você não tem permissão para acessar esse conteúdo'
       );

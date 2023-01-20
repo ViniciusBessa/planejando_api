@@ -57,6 +57,8 @@ const createGoal = asyncWrapper(
 
     if (!value) {
       throw new BadRequestError('Por favor, informe o limite da meta');
+    } else if (!categoryId) {
+      throw new BadRequestError('Por favor, informe a categoria da meta');
     }
 
     // Checking if the category is on the database
@@ -98,8 +100,8 @@ const updateGoal = asyncWrapper(
       throw new NotFoundError(`Nenhuma meta foi encontrada com o id ${goalId}`);
     }
 
-    // Checking if the requesting user is an admin or the user who created the goal
-    if (user.role !== Role.ADMIN && goal.userId !== user.id) {
+    // Checking if the requesting created the goal
+    if (goal.userId !== user.id) {
       throw new ForbiddenError(
         'Você não tem permissão para acessar esse conteúdo'
       );

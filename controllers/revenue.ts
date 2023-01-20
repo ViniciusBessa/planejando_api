@@ -85,8 +85,8 @@ const updateRevenue = asyncWrapper(
         `Nenhuma receita foi encontrada com o id ${revenueId}`
       );
     }
-    // Checking if the requesting user is an admin or the user who created the revenue
-    if (user.role !== Role.ADMIN && revenue.userId !== user.id) {
+    // Checking if the requesting created the revenue
+    if (revenue.userId !== user.id) {
       throw new ForbiddenError(
         'Você não tem permissão para acessar esse conteúdo'
       );

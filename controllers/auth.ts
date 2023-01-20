@@ -15,12 +15,27 @@ const registerUser = asyncWrapper(
     const { name, email, password } = req.body;
 
     // Validating the name, email and password
-    if (name.length > 40 || name.length < 8) {
+    if (!name || name.length > 40 || name.length < 8) {
       throw new BadRequestError('O nome deve conter de 8 a 40 caracteres');
     } else if (!EMAIL_REGEX.test(email)) {
       throw new BadRequestError(`O e-mail ${email} está incorreto`);
     } else if (!password) {
       throw new BadRequestError('Por favor, informe uma senha');
+    }
+
+    // Checking if the name or email are already in use
+    const nameInUse = await prisma.user.findFirst({
+      where: { name },
+    });
+
+    const emailInUse = await prisma.user.findFirst({
+      where: { email },
+    });
+
+    if (nameInUse) {
+      throw new BadRequestError(`O nome ${name} já está em uso`);
+    } else if (emailInUse) {
+      throw new BadRequestError(`O e-mail ${email} já está em uso`);
     }
     // Hashing the password
     const hashedPassword = await generatePassword(password);
@@ -34,7 +49,7 @@ const registerUser = asyncWrapper(
     const userPayload = await getUserPayload(user);
     const token = await createToken(userPayload);
 
-    return res.status(StatusCodes.OK).json({ user: userPayload, token });
+    return res.status(StatusCodes.CREATED).json({ user: userPayload, token });
   }
 );
 
