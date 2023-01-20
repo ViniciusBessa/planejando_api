@@ -10,13 +10,16 @@ const authMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    // Trying to get a token from the headers
-    const token = req.headers.authorization;
+    // Getting the authorization header
+    const { authorization } = req.headers;
 
-    // Checking if there was a token
-    if (!token) {
+    // If there is no value in authorization value, just continue with the user not authenticated
+    if (!authorization) {
       return next();
     }
+
+    // Getting the token from the authorization header
+    const token = authorization.split(' ')[1];
 
     // Getting the user from the database
     const userPayload = await verifyToken(token);
