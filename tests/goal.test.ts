@@ -78,6 +78,18 @@ describe('Goal Endpoints', () => {
       );
     });
 
+    it('POST /api/v1/goals should fail to create a new goal by already having a goal in the category', async () => {
+      const response = await request
+        .post('/api/v1/goals')
+        .send({ value: 2000, categoryId: 1 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.goal).toBeFalsy();
+      expect(response.body.err).toEqual(
+        'Você só pode ter uma meta por categoria'
+      );
+    });
+
     it('POST /api/v1/goals should successfully create a new goal', async () => {
       const response = await request
         .post('/api/v1/goals')
@@ -86,16 +98,17 @@ describe('Goal Endpoints', () => {
       expect(response.statusCode).toEqual(StatusCodes.CREATED);
       expect(response.body.goal).toBeTruthy();
       expect(response.body.goal.value).toEqual('2000');
+      expect(response.body.goal.category.title).toEqual('Investimentos');
     });
 
-    it('PATCH /api/v1/goals/1 should fail to update a goal by missing the value', async () => {
+    it('PATCH /api/v1/goals/1 should fail to update a goal by missing a value and category id', async () => {
       const response = await request
         .patch('/api/v1/goals/1')
         .set({ Authorization: token });
       expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(response.body.goal).toBeFalsy();
       expect(response.body.err).toEqual(
-        'Por favor, informe o novo limite da meta'
+        'Por favor, informe um novo limite ou categoria para a meta'
       );
     });
 
@@ -119,6 +132,16 @@ describe('Goal Endpoints', () => {
       expect(response.statusCode).toEqual(StatusCodes.OK);
       expect(response.body.goal).toBeTruthy();
       expect(response.body.goal.value).toEqual('200');
+    });
+
+    it('PATCH /api/v1/goals/1 should successfully update the category id of a goal created by the user', async () => {
+      const response = await request
+        .patch('/api/v1/goals/1')
+        .send({ categoryId: 2 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.OK);
+      expect(response.body.goal).toBeTruthy();
+      expect(response.body.goal.category.title).toEqual('Educação');
     });
 
     it('PATCH /api/v1/goals/4 should fail to update the value of a goal created by another user', async () => {
@@ -247,24 +270,37 @@ describe('Goal Endpoints', () => {
       );
     });
 
+    it('POST /api/v1/goals should fail to create a new goal by already having a goal in the category', async () => {
+      const response = await request
+        .post('/api/v1/goals')
+        .send({ value: 2000, categoryId: 1 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.goal).toBeFalsy();
+      expect(response.body.err).toEqual(
+        'Você só pode ter uma meta por categoria'
+      );
+    });
+
     it('POST /api/v1/goals should successfully create a new goal', async () => {
       const response = await request
         .post('/api/v1/goals')
-        .send({ value: 2000, categoryId: 5 })
+        .send({ value: 2000, categoryId: 2 })
         .set({ Authorization: token });
       expect(response.statusCode).toEqual(StatusCodes.CREATED);
       expect(response.body.goal).toBeTruthy();
       expect(response.body.goal.value).toEqual('2000');
+      expect(response.body.goal.category.title).toEqual('Educação');
     });
 
-    it('PATCH /api/v1/goals/1 should fail to update a goal by missing the value', async () => {
+    it('PATCH /api/v1/goals/1 should fail to update a goal by missing a value and category id', async () => {
       const response = await request
         .patch('/api/v1/goals/1')
         .set({ Authorization: token });
       expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(response.body.goal).toBeFalsy();
       expect(response.body.err).toEqual(
-        'Por favor, informe o novo limite da meta'
+        'Por favor, informe um novo limite ou categoria para a meta'
       );
     });
 
@@ -288,6 +324,28 @@ describe('Goal Endpoints', () => {
       expect(response.statusCode).toEqual(StatusCodes.OK);
       expect(response.body.goal).toBeTruthy();
       expect(response.body.goal.value).toEqual('200');
+    });
+
+    it('PATCH /api/v1/goals/4 should fail to update the category id of a goal by not found', async () => {
+      const response = await request
+        .patch('/api/v1/goals/4')
+        .send({ categoryId: 14 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.NOT_FOUND);
+      expect(response.body.goal).toBeFalsy();
+      expect(response.body.err).toEqual(
+        'Nenhuma categoria foi encontrada com o id 14'
+      );
+    });
+
+    it('PATCH /api/v1/goals/4 should successfully update the category id of a goal created by the user', async () => {
+      const response = await request
+        .patch('/api/v1/goals/4')
+        .send({ categoryId: 2 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.OK);
+      expect(response.body.goal).toBeTruthy();
+      expect(response.body.goal.category.title).toEqual('Educação');
     });
 
     it('PATCH /api/v1/goals/1 should fail to update the value of a goal created by another user', async () => {

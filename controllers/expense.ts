@@ -68,7 +68,7 @@ const createExpense = asyncWrapper(
       throw new BadRequestError('Por favor, informe a categoria da despesa');
     }
 
-    // Checking if the category is on the database
+    // Checking if the category is in the database
     const category = await prisma.category.findFirst({
       where: { id: categoryId },
     });
@@ -97,11 +97,26 @@ const updateExpense = asyncWrapper(
   async (req: Request, res: Response, next: NextFunction) => {
     const { user } = req;
     const { expenseId } = req.params;
-    const { value } = req.body;
+    const { value, categoryId } = req.body;
 
-    if (!value) {
-      throw new BadRequestError('Por favor, informe o novo valor da despesa');
+    if (!value && !categoryId) {
+      throw new BadRequestError(
+        'Por favor, informe um novo valor ou categoria para a despesa'
+      );
     }
+
+    // Checking if the category is in the database
+    const category = await prisma.category.findFirst({
+      where: { id: categoryId },
+    });
+
+    if (!category) {
+      throw new NotFoundError(
+        `Nenhuma categoria foi encontrada com o id ${categoryId}`
+      );
+    }
+
+    // Checking if the expense is in the database
     const expense = await prisma.expense.findFirst({
       where: { id: Number(expenseId) },
     });
@@ -120,7 +135,7 @@ const updateExpense = asyncWrapper(
     // Updating the expense
     const updatedExpense = await prisma.expense.update({
       where: { id: Number(expenseId) },
-      data: { value },
+      data: { value, categoryId },
       include: { category: true, user: false },
     });
     return res.status(StatusCodes.OK).json({ expense: updatedExpense });

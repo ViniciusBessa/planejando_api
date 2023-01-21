@@ -108,14 +108,14 @@ describe('Expense Endpoints', () => {
       expect(response.body.expense.isEssential).toEqual(true);
     });
 
-    it('PATCH /api/v1/expenses/1 should fail to update an expense by missing the value', async () => {
+    it('PATCH /api/v1/expenses/1 should fail to update an expense by missing a value and category id', async () => {
       const response = await request
         .patch('/api/v1/expenses/1')
         .set({ Authorization: token });
       expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(response.body.expense).toBeFalsy();
       expect(response.body.err).toEqual(
-        'Por favor, informe o novo valor da despesa'
+        'Por favor, informe um novo valor ou categoria para a despesa'
       );
     });
 
@@ -131,6 +131,18 @@ describe('Expense Endpoints', () => {
       );
     });
 
+    it('PATCH /api/v1/expenses/4 should fail to update the category id of a expense by not found', async () => {
+      const response = await request
+        .patch('/api/v1/expenses/4')
+        .send({ categoryId: 14 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.NOT_FOUND);
+      expect(response.body.expense).toBeFalsy();
+      expect(response.body.err).toEqual(
+        'Nenhuma categoria foi encontrada com o id 14'
+      );
+    });
+
     it('PATCH /api/v1/expenses/1 should successfully update the value of an expense created by the user', async () => {
       const response = await request
         .patch('/api/v1/expenses/1')
@@ -139,6 +151,16 @@ describe('Expense Endpoints', () => {
       expect(response.statusCode).toEqual(StatusCodes.OK);
       expect(response.body.expense).toBeTruthy();
       expect(response.body.expense.value).toEqual('200');
+    });
+
+    it('PATCH /api/v1/expenses/2 should successfully update the category id of an expense created by the user', async () => {
+      const response = await request
+        .patch('/api/v1/expenses/2')
+        .send({ categoryId: 2 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.OK);
+      expect(response.body.expense).toBeTruthy();
+      expect(response.body.expense.category.title).toEqual('Educação');
     });
 
     it('PATCH /api/v1/expenses/4 should fail to update the value of an expense created by another user', async () => {
@@ -287,24 +309,23 @@ describe('Expense Endpoints', () => {
         .send({
           value: 2000,
           description: 'New expense',
-          isEssential: true,
           categoryId: 5,
         })
         .set({ Authorization: token });
       expect(response.statusCode).toEqual(StatusCodes.CREATED);
       expect(response.body.expense).toBeTruthy();
       expect(response.body.expense.value).toEqual('2000');
-      expect(response.body.expense.isEssential).toEqual(true);
+      expect(response.body.expense.isEssential).toEqual(false);
     });
 
-    it('PATCH /api/v1/expenses/1 should fail to update an expense by missing the value', async () => {
+    it('PATCH /api/v1/expenses/1 should fail to update an expense by missing a value and category id', async () => {
       const response = await request
         .patch('/api/v1/expenses/1')
         .set({ Authorization: token });
       expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(response.body.expense).toBeFalsy();
       expect(response.body.err).toEqual(
-        'Por favor, informe o novo valor da despesa'
+        'Por favor, informe um novo valor ou categoria para a despesa'
       );
     });
 
@@ -320,6 +341,18 @@ describe('Expense Endpoints', () => {
       );
     });
 
+    it('PATCH /api/v1/expenses/4 should fail to update the category id of a expense by not found', async () => {
+      const response = await request
+        .patch('/api/v1/expenses/4')
+        .send({ categoryId: 14 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.NOT_FOUND);
+      expect(response.body.expense).toBeFalsy();
+      expect(response.body.err).toEqual(
+        'Nenhuma categoria foi encontrada com o id 14'
+      );
+    });
+
     it('PATCH /api/v1/expenses/4 should successfully update the value of an expense created by the user', async () => {
       const response = await request
         .patch('/api/v1/expenses/4')
@@ -328,6 +361,16 @@ describe('Expense Endpoints', () => {
       expect(response.statusCode).toEqual(StatusCodes.OK);
       expect(response.body.expense).toBeTruthy();
       expect(response.body.expense.value).toEqual('600');
+    });
+
+    it('PATCH /api/v1/expenses/4 should successfully update the category id of an expense created by the user', async () => {
+      const response = await request
+        .patch('/api/v1/expenses/4')
+        .send({ categoryId: 2 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.OK);
+      expect(response.body.expense).toBeTruthy();
+      expect(response.body.expense.category.title).toEqual('Educação');
     });
 
     it('PATCH /api/v1/expenses/1 should fail to update the value of an expense created by another user', async () => {

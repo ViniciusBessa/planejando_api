@@ -61,7 +61,16 @@ const createGoal = asyncWrapper(
       throw new BadRequestError('Por favor, informe a categoria da meta');
     }
 
-    // Checking if the category is on the database
+    // Checking if the user already has a goal on this category
+    const goalAlreadyExists = await prisma.goal.findFirst({
+      where: { userId: user.id, categoryId },
+    });
+
+    if (goalAlreadyExists) {
+      throw new BadRequestError('Você só pode ter uma meta por categoria');
+    }
+
+    // Checking if the category is in the database
     const category = await prisma.category.findFirst({
       where: { id: categoryId },
     });
@@ -87,11 +96,26 @@ const updateGoal = asyncWrapper(
   async (req: Request, res: Response, next: NextFunction) => {
     const { user } = req;
     const { goalId } = req.params;
-    const { value } = req.body;
+    const { value, categoryId } = req.body;
 
-    if (!value) {
-      throw new BadRequestError('Por favor, informe o novo limite da meta');
+    if (!value && !categoryId) {
+      throw new BadRequestError(
+        'Por favor, informe um novo limite ou categoria para a meta'
+      );
     }
+
+    // Checking if the category is in the database
+    const category = await prisma.category.findFirst({
+      where: { id: categoryId },
+    });
+
+    if (!category) {
+      throw new NotFoundError(
+        `Nenhuma categoria foi encontrada com o id ${categoryId}`
+      );
+    }
+
+    // Checking if the goal is in the database
     const goal = await prisma.goal.findFirst({
       where: { id: Number(goalId) },
     });
@@ -110,7 +134,7 @@ const updateGoal = asyncWrapper(
     // Updating the goal
     const updatedGoal = await prisma.goal.update({
       where: { id: Number(goalId) },
-      data: { value },
+      data: { value, categoryId },
       include: { category: true, user: false },
     });
     return res.status(StatusCodes.OK).json({ goal: updatedGoal });
