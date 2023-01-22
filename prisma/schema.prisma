@@ -19,9 +19,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  revenues Revenue[]
-  goals    Goal[]
-  expenses Expense[]
+  revenues            Revenue[]
+  goals               Goal[]
+  expenses            Expense[]
+  passwordResetTokens PasswordResetToken[]
 
   @@map("users")
 }
@@ -76,6 +77,16 @@ model Category {
   expenses Expense[]
 
   @@map("categories")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("password_reset_tokens")
 }
 
 enum Role {

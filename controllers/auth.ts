@@ -5,10 +5,9 @@ import { comparePassword, generatePassword } from '../utils/bcrypt';
 import { StatusCodes } from 'http-status-codes';
 import { createToken, getUserPayload } from '../utils/jwt';
 import { BadRequestError, NotFoundError } from '../errors';
+import { EMAIL_REGEX } from '../utils/email-regex';
 
 const prisma = new PrismaClient();
-const EMAIL_REGEX =
-  /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 const registerUser = asyncWrapper(
   async (req: Request, res: Response, next: NextFunction) => {

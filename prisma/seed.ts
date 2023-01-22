@@ -49,6 +49,39 @@ async function main() {
     },
   });
 
+  const richard = await prisma.user.upsert({
+    where: { email: 'richard@gmail.com' },
+    update: {},
+    create: {
+      name: 'Richard Astrid',
+      email: 'richard@gmail.com',
+      password: await generatePassword('rastrid'),
+      role: 'ADMIN',
+    },
+  });
+
+  const roberto = await prisma.user.upsert({
+    where: { email: 'roberto@gmail.com' },
+    update: {},
+    create: {
+      name: 'Roberto Alfredo',
+      email: 'roberto@gmail.com',
+      password: await generatePassword('ralfredo'),
+      role: 'USER',
+    },
+  });
+
+  const james = await prisma.user.upsert({
+    where: { email: 'james@gmail.com' },
+    update: {},
+    create: {
+      name: 'James Williams',
+      email: 'james@gmail.com',
+      password: await generatePassword('jwilliams'),
+      role: 'USER',
+    },
+  });
+
   // Categories
   const food = await prisma.category.upsert({
     where: { id: 1 },
