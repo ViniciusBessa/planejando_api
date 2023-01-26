@@ -261,10 +261,10 @@ const generatePasswordResetToken = asyncWrapper(
          color: white;
          padding: 8px 12px;
          text-decoration: none" 
-       href=${process.env.FRONTEND}?token=${resetToken.id}
+       href=${process.env.FRONTEND_RESET_PATH}?token=${resetToken.id}
        >Redefinir senha</a>
       <p>Ou copie e cole o seguinte URL no seu navegador:</p>
-      <a href=${process.env.FRONTEND}?token=${resetToken.id}>${process.env.FRONTEND}?token=${resetToken.id}</a>
+      <a href=${process.env.FRONTEND_RESET_PATH}?token=${resetToken.id}>${process.env.FRONTEND_RESET_PATH}?token=${resetToken.id}</a>
       `,
     });
     return res.status(StatusCodes.CREATED).json();

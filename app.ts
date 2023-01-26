@@ -1,6 +1,33 @@
 import express from 'express';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
+
+// Security middlewares
+import helmet from 'helmet';
+import cors from 'cors';
+import rateLimiter from 'express-rate-limit';
+
+const FIVE_MINUTES = 5 * 60 * 1000;
+const MAX_REQUESTS = 1000;
+
+app.set('trust_proxy', 1);
+app.use(helmet());
+app.use(
+  cors({
+    credentials: process.env.NODE_ENV === 'production',
+    origin: process.env.CORS_ORIGIN || '*',
+  })
+);
+app.use(
+  rateLimiter({
+    windowMs: FIVE_MINUTES,
+    max: MAX_REQUESTS,
+    message: 'Limite de requests alcançado',
+  })
+);
 
 // Express middlewares
 app.use(express.json());
