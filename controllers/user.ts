@@ -306,6 +306,13 @@ const resetPassword = asyncWrapper(
       throw new NotFoundError(`O token ${token} não foi encontrado`);
     }
 
+    // Checking if the token expired
+    const tenMinutes = 1000 * 60 * 10;
+
+    if (Date.now() - resetToken.createdAt.getTime() > tenMinutes) {
+      throw new BadRequestError(`O token ${token} já expirou`);
+    }
+
     // Hashing the password and updating the user's data
     const hashedPassword = await generatePassword(newPassword);
     const user = await prisma.user.update({

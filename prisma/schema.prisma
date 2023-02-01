@@ -43,14 +43,15 @@ model Expense {
 }
 
 model Goal {
-  id         Int      @id @default(autoincrement())
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     Int
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  categoryId Int
-  value      Decimal  @db.Decimal(16, 2)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id                Int      @id @default(autoincrement())
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            Int
+  category          Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId        Int
+  value             Decimal  @db.Decimal(16, 2)
+  essentialExpenses Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   @@map("goals")
 }
