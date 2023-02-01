@@ -4,12 +4,11 @@
   "description": "Uma API para planejamento financeiro",
   "main": "server.ts",
   "scripts": {
-    "build": "tsc && prisma migrate deploy && prisma generate",
+    "build": "tsc && prisma migrate deploy && prisma generate && npm start",
     "start": "node ./dist/server.js",
     "dev": "tsnd --files server.ts",
     "db": "prisma migrate reset --force",
-    "test": "npm run db && jest",
-    "postinstall": "npm run build"
+    "test": "npm run db && jest"
   },
   "repository": {
     "type": "git",

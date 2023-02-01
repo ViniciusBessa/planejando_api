@@ -77,4 +77,13 @@ const loginUser = asyncWrapper(
   }
 );
 
-export { registerUser, loginUser };
+const userInfo = asyncWrapper(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { user } = req;
+    const token = await createToken(user);
+
+    return res.status(StatusCodes.OK).json({ user, token });
+  }
+);
+
+export { registerUser, loginUser, userInfo };
