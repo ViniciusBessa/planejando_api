@@ -7,7 +7,8 @@
     "start": "node ./dist/server.js",
     "dev": "tsnd --files server.ts",
     "db": "prisma migrate reset --force",
-    "test": "npm run db && jest"
+    "test": "npm run db && jest",
+    "postinstall": "tsc"
   },
   "repository": {
     "type": "git",
