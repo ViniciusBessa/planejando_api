@@ -27,6 +27,7 @@ const getAllExpenses = asyncWrapper(
         userId: user.role !== Role.ADMIN ? user.id : undefined,
         categoryId: Number(categoryId) || undefined,
       },
+      include: { category: true, user: false },
     });
     return res.status(StatusCodes.OK).json({ expenses });
   }
@@ -97,11 +98,11 @@ const updateExpense = asyncWrapper(
   async (req: Request, res: Response, next: NextFunction) => {
     const { user } = req;
     const { expenseId } = req.params;
-    const { value, categoryId } = req.body;
+    const { value, categoryId, description, isEssential } = req.body;
 
-    if (!value && !categoryId) {
+    if (!value && !categoryId && !description && isEssential === undefined) {
       throw new BadRequestError(
-        'Por favor, informe um novo valor ou categoria para a despesa'
+        'Por favor, informe um novo valor, tipo, categoria ou descrição para a despesa'
       );
     }
 
@@ -135,7 +136,13 @@ const updateExpense = asyncWrapper(
     // Updating the expense
     const updatedExpense = await prisma.expense.update({
       where: { id: Number(expenseId) },
-      data: { value, categoryId },
+      data: {
+        value,
+        categoryId,
+        description,
+        isEssential:
+          isEssential !== undefined ? Boolean(isEssential) : undefined,
+      },
       include: { category: true, user: false },
     });
     return res.status(StatusCodes.OK).json({ expense: updatedExpense });

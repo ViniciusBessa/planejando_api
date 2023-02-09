@@ -101,14 +101,14 @@ describe('Goal Endpoints', () => {
       expect(response.body.goal.category.title).toEqual('Investimentos');
     });
 
-    it('PATCH /api/v1/goals/1 should fail to update a goal by missing a value and category id', async () => {
+    it('PATCH /api/v1/goals/1 should fail to update a goal by missing a value, type and category id', async () => {
       const response = await request
         .patch('/api/v1/goals/1')
         .set({ Authorization: token });
       expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(response.body.goal).toBeFalsy();
       expect(response.body.err).toEqual(
-        'Por favor, informe um novo limite ou categoria para a meta'
+        'Por favor, informe um novo limite, tipo ou categoria para a meta'
       );
     });
 
@@ -142,6 +142,16 @@ describe('Goal Endpoints', () => {
       expect(response.statusCode).toEqual(StatusCodes.OK);
       expect(response.body.goal).toBeTruthy();
       expect(response.body.goal.category.title).toEqual('Educação');
+    });
+
+    it('PATCH /api/v1/goals/1 should successfully update the type of a goal created by the user', async () => {
+      const response = await request
+        .patch('/api/v1/goals/1')
+        .send({ essentialExpenses: true })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.OK);
+      expect(response.body.goal).toBeTruthy();
+      expect(response.body.goal.essentialExpenses).toEqual(true);
     });
 
     it('PATCH /api/v1/goals/4 should fail to update the value of a goal created by another user', async () => {
@@ -300,7 +310,7 @@ describe('Goal Endpoints', () => {
       expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(response.body.goal).toBeFalsy();
       expect(response.body.err).toEqual(
-        'Por favor, informe um novo limite ou categoria para a meta'
+        'Por favor, informe um novo limite, tipo ou categoria para a meta'
       );
     });
 
@@ -324,6 +334,16 @@ describe('Goal Endpoints', () => {
       expect(response.statusCode).toEqual(StatusCodes.OK);
       expect(response.body.goal).toBeTruthy();
       expect(response.body.goal.value).toEqual('200');
+    });
+
+    it('PATCH /api/v1/goals/4 should successfully update the type of a goal created by the user', async () => {
+      const response = await request
+        .patch('/api/v1/goals/4')
+        .send({ essentialExpenses: true })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.OK);
+      expect(response.body.goal).toBeTruthy();
+      expect(response.body.goal.essentialExpenses).toEqual(true);
     });
 
     it('PATCH /api/v1/goals/4 should fail to update the category id of a goal by not found', async () => {

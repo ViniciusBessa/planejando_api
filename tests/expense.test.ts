@@ -115,7 +115,7 @@ describe('Expense Endpoints', () => {
       expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(response.body.expense).toBeFalsy();
       expect(response.body.err).toEqual(
-        'Por favor, informe um novo valor ou categoria para a despesa'
+        'Por favor, informe um novo valor, tipo, categoria ou descrição para a despesa'
       );
     });
 
@@ -161,6 +161,26 @@ describe('Expense Endpoints', () => {
       expect(response.statusCode).toEqual(StatusCodes.OK);
       expect(response.body.expense).toBeTruthy();
       expect(response.body.expense.category.title).toEqual('Educação');
+    });
+
+    it('PATCH /api/v1/expenses/2 should successfully update the type of an expense created by the user', async () => {
+      const response = await request
+        .patch('/api/v1/expenses/2')
+        .send({ isEssential: true })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.OK);
+      expect(response.body.expense).toBeTruthy();
+      expect(response.body.expense.isEssential).toEqual(true);
+    });
+
+    it('PATCH /api/v1/expenses/2 should successfully update the description of an expense created by the user', async () => {
+      const response = await request
+        .patch('/api/v1/expenses/2')
+        .send({ description: 'New description' })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.OK);
+      expect(response.body.expense).toBeTruthy();
+      expect(response.body.expense.description).toEqual('New description');
     });
 
     it('PATCH /api/v1/expenses/4 should fail to update the value of an expense created by another user', async () => {
@@ -325,7 +345,7 @@ describe('Expense Endpoints', () => {
       expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(response.body.expense).toBeFalsy();
       expect(response.body.err).toEqual(
-        'Por favor, informe um novo valor ou categoria para a despesa'
+        'Por favor, informe um novo valor, tipo, categoria ou descrição para a despesa'
       );
     });
 
@@ -371,6 +391,26 @@ describe('Expense Endpoints', () => {
       expect(response.statusCode).toEqual(StatusCodes.OK);
       expect(response.body.expense).toBeTruthy();
       expect(response.body.expense.category.title).toEqual('Educação');
+    });
+
+    it('PATCH /api/v1/expenses/4 should successfully update the type of an expense created by the user', async () => {
+      const response = await request
+        .patch('/api/v1/expenses/4')
+        .send({ isEssential: true })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.OK);
+      expect(response.body.expense).toBeTruthy();
+      expect(response.body.expense.isEssential).toEqual(true);
+    });
+
+    it('PATCH /api/v1/expenses/4 should successfully update the description of an expense created by the user', async () => {
+      const response = await request
+        .patch('/api/v1/expenses/4')
+        .send({ description: 'New description' })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.OK);
+      expect(response.body.expense).toBeTruthy();
+      expect(response.body.expense.description).toEqual('New description');
     });
 
     it('PATCH /api/v1/expenses/1 should fail to update the value of an expense created by another user', async () => {

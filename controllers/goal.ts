@@ -9,7 +9,14 @@ const prisma = new PrismaClient();
 const getAllGoals = asyncWrapper(
   async (req: Request, res: Response, next: NextFunction) => {
     const { user } = req;
-    const { minValue, maxValue, minDate, maxDate, categoryId } = req.query;
+    const {
+      minValue,
+      maxValue,
+      minDate,
+      maxDate,
+      categoryId,
+      essentialExpenses,
+    } = req.query;
 
     const goals = await prisma.goal.findMany({
       where: {
@@ -17,6 +24,10 @@ const getAllGoals = asyncWrapper(
           gte: Number(minValue) || undefined,
           lte: Number(maxValue) || undefined,
         },
+        essentialExpenses:
+          essentialExpenses !== undefined
+            ? Boolean(essentialExpenses)
+            : undefined,
         createdAt: {
           gte: minDate ? new Date(minDate as string) : undefined,
           lte: maxDate ? new Date(maxDate as string) : undefined,
@@ -24,6 +35,7 @@ const getAllGoals = asyncWrapper(
         userId: user.role !== Role.ADMIN ? user.id : undefined,
         categoryId: Number(categoryId) || undefined,
       },
+      include: { category: true, user: false },
     });
     return res.status(StatusCodes.OK).json({ goals });
   }
@@ -53,7 +65,7 @@ const getSpecificGoal = asyncWrapper(
 const createGoal = asyncWrapper(
   async (req: Request, res: Response, next: NextFunction) => {
     const { user } = req;
-    const { value, categoryId } = req.body;
+    const { value, categoryId, essentialExpenses } = req.body;
 
     if (!value) {
       throw new BadRequestError('Por favor, informe o limite da meta');
@@ -85,6 +97,10 @@ const createGoal = asyncWrapper(
         user: { connect: { id: user.id } },
         category: { connect: { id: categoryId } },
         value,
+        essentialExpenses:
+          essentialExpenses !== undefined
+            ? Boolean(essentialExpenses)
+            : undefined,
       },
       include: { category: true, user: false },
     });
@@ -96,11 +112,11 @@ const updateGoal = asyncWrapper(
   async (req: Request, res: Response, next: NextFunction) => {
     const { user } = req;
     const { goalId } = req.params;
-    const { value, categoryId } = req.body;
+    const { value, categoryId, essentialExpenses } = req.body;
 
-    if (!value && !categoryId) {
+    if (!value && !categoryId && essentialExpenses === undefined) {
       throw new BadRequestError(
-        'Por favor, informe um novo limite ou categoria para a meta'
+        'Por favor, informe um novo limite, tipo ou categoria para a meta'
       );
     }
 
@@ -134,7 +150,14 @@ const updateGoal = asyncWrapper(
     // Updating the goal
     const updatedGoal = await prisma.goal.update({
       where: { id: Number(goalId) },
-      data: { value, categoryId },
+      data: {
+        value,
+        categoryId,
+        essentialExpenses:
+          essentialExpenses !== undefined
+            ? Boolean(essentialExpenses)
+            : undefined,
+      },
       include: { category: true, user: false },
     });
     return res.status(StatusCodes.OK).json({ goal: updatedGoal });
