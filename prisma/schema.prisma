@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -35,6 +36,7 @@ model Expense {
   categoryId  Int
   value       Decimal  @db.Decimal(16, 2)
   description String   @db.VarChar(200)
+  date        DateTime @default(now())
   isEssential Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -57,12 +59,14 @@ model Goal {
 }
 
 model Revenue {
-  id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    Int
-  value     Decimal  @db.Decimal(16, 2)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
+  description String   @db.VarChar(200)
+  value       Decimal  @db.Decimal(16, 2)
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("revenues")
 }

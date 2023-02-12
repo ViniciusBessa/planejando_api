@@ -47,6 +47,7 @@ describe('Revenue Endpoints', () => {
     it('POST /api/v1/revenues should fail to create a new revenue by missing the value', async () => {
       const response = await request
         .post('/api/v1/revenues')
+        .send({ description: 'New revenue' })
         .set({ Authorization: token });
       expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(response.body.revenue).toBeFalsy();
@@ -55,24 +56,36 @@ describe('Revenue Endpoints', () => {
       );
     });
 
+    it('POST /api/v1/revenues should fail to create a new revenue by missing the description', async () => {
+      const response = await request
+        .post('/api/v1/revenues')
+        .send({ value: 200 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.revenue).toBeFalsy();
+      expect(response.body.err).toEqual(
+        'Por favor, informe uma descrição para a receita'
+      );
+    });
+
     it('POST /api/v1/revenues should successfully create a new revenue', async () => {
       const response = await request
         .post('/api/v1/revenues')
-        .send({ value: 2000 })
+        .send({ value: 2000, description: 'New revenue' })
         .set({ Authorization: token });
       expect(response.statusCode).toEqual(StatusCodes.CREATED);
       expect(response.body.revenue).toBeTruthy();
       expect(response.body.revenue.value).toEqual('2000');
     });
 
-    it('PATCH /api/v1/revenues/1 should fail to update a revenue by missing the value', async () => {
+    it('PATCH /api/v1/revenues/1 should fail to update a revenue by missing a value, description and date', async () => {
       const response = await request
         .patch('/api/v1/revenues/1')
         .set({ Authorization: token });
       expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(response.body.revenue).toBeFalsy();
       expect(response.body.err).toEqual(
-        'Por favor, informe o novo valor da receita'
+        'Por favor, informe um novo valor, descrição ou data para a receita'
       );
     });
 
@@ -96,6 +109,27 @@ describe('Revenue Endpoints', () => {
       expect(response.statusCode).toEqual(StatusCodes.OK);
       expect(response.body.revenue).toBeTruthy();
       expect(response.body.revenue.value).toEqual('200');
+    });
+
+    it('PATCH /api/v1/revenues/1 should successfully update the description of a revenue created by the user', async () => {
+      const response = await request
+        .patch('/api/v1/revenues/1')
+        .send({ description: 'Description' })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.OK);
+      expect(response.body.revenue).toBeTruthy();
+      expect(response.body.revenue.description).toEqual('Description');
+    });
+
+    it('PATCH /api/v1/revenues/1 should successfully update the date of a revenue created by the user', async () => {
+      const newDate = new Date();
+      const response = await request
+        .patch('/api/v1/revenues/1')
+        .send({ date: newDate })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.OK);
+      expect(response.body.revenue).toBeTruthy();
+      expect(new Date(response.body.revenue.date)).toEqual(newDate);
     });
 
     it('PATCH /api/v1/revenues/4 should fail to update the value of a revenue created by another user', async () => {
@@ -193,6 +227,7 @@ describe('Revenue Endpoints', () => {
     it('POST /api/v1/revenues should fail to create a new revenue by missing the value', async () => {
       const response = await request
         .post('/api/v1/revenues')
+        .send({ description: 'New revenue' })
         .set({ Authorization: token });
       expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(response.body.revenue).toBeFalsy();
@@ -201,24 +236,36 @@ describe('Revenue Endpoints', () => {
       );
     });
 
+    it('POST /api/v1/revenues should fail to create a new revenue by missing the description', async () => {
+      const response = await request
+        .post('/api/v1/revenues')
+        .send({ value: 200 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.revenue).toBeFalsy();
+      expect(response.body.err).toEqual(
+        'Por favor, informe uma descrição para a receita'
+      );
+    });
+
     it('POST /api/v1/revenues should successfully create a new revenue', async () => {
       const response = await request
         .post('/api/v1/revenues')
-        .send({ value: 2000 })
+        .send({ value: 2000, description: 'New revenue' })
         .set({ Authorization: token });
       expect(response.statusCode).toEqual(StatusCodes.CREATED);
       expect(response.body.revenue).toBeTruthy();
       expect(response.body.revenue.value).toEqual('2000');
     });
 
-    it('PATCH /api/v1/revenues/1 should fail to update a revenue by missing the value', async () => {
+    it('PATCH /api/v1/revenues/4 should fail to update a revenue by missing a value, description and date', async () => {
       const response = await request
         .patch('/api/v1/revenues/1')
         .set({ Authorization: token });
       expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(response.body.revenue).toBeFalsy();
       expect(response.body.err).toEqual(
-        'Por favor, informe o novo valor da receita'
+        'Por favor, informe um novo valor, descrição ou data para a receita'
       );
     });
 
@@ -242,6 +289,27 @@ describe('Revenue Endpoints', () => {
       expect(response.statusCode).toEqual(StatusCodes.OK);
       expect(response.body.revenue).toBeTruthy();
       expect(response.body.revenue.value).toEqual('1500');
+    });
+
+    it('PATCH /api/v1/revenues/4 should successfully update the description of a revenue created by the user', async () => {
+      const response = await request
+        .patch('/api/v1/revenues/4')
+        .send({ description: 'Description' })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.OK);
+      expect(response.body.revenue).toBeTruthy();
+      expect(response.body.revenue.description).toEqual('Description');
+    });
+
+    it('PATCH /api/v1/revenues/4 should successfully update the date of a revenue created by the user', async () => {
+      const newDate = new Date();
+      const response = await request
+        .patch('/api/v1/revenues/4')
+        .send({ date: newDate })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.OK);
+      expect(response.body.revenue).toBeTruthy();
+      expect(new Date(response.body.revenue.date)).toEqual(newDate);
     });
 
     it('PATCH /api/v1/revenues/6 should fail to update the value of a revenue created by another user', async () => {

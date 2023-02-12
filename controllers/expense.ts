@@ -20,7 +20,7 @@ const getAllExpenses = asyncWrapper(
         },
         isEssential:
           isEssential !== undefined ? Boolean(isEssential) : undefined,
-        createdAt: {
+        date: {
           gte: minDate ? new Date(minDate as string) : undefined,
           lte: maxDate ? new Date(maxDate as string) : undefined,
         },
@@ -59,7 +59,7 @@ const getSpecificExpense = asyncWrapper(
 const createExpense = asyncWrapper(
   async (req: Request, res: Response, next: NextFunction) => {
     const { user } = req;
-    const { value, description, isEssential, categoryId } = req.body;
+    const { value, description, isEssential, categoryId, date } = req.body;
 
     if (!value || !description) {
       throw new BadRequestError(
@@ -85,6 +85,7 @@ const createExpense = asyncWrapper(
         category: { connect: { id: categoryId } },
         value,
         description,
+        date: date ? new Date(date) : undefined,
         isEssential:
           isEssential !== undefined ? Boolean(isEssential) : undefined,
       },
@@ -98,11 +99,17 @@ const updateExpense = asyncWrapper(
   async (req: Request, res: Response, next: NextFunction) => {
     const { user } = req;
     const { expenseId } = req.params;
-    const { value, categoryId, description, isEssential } = req.body;
+    const { value, categoryId, description, isEssential, date } = req.body;
 
-    if (!value && !categoryId && !description && isEssential === undefined) {
+    if (
+      !value &&
+      !categoryId &&
+      !description &&
+      isEssential === undefined &&
+      !date
+    ) {
       throw new BadRequestError(
-        'Por favor, informe um novo valor, tipo, categoria ou descrição para a despesa'
+        'Por favor, informe um novo valor, tipo, categoria, descrição ou data para a despesa'
       );
     }
 
@@ -142,6 +149,7 @@ const updateExpense = asyncWrapper(
         description,
         isEssential:
           isEssential !== undefined ? Boolean(isEssential) : undefined,
+        date: date ? new Date(date) : undefined,
       },
       include: { category: true, user: false },
     });

@@ -138,6 +138,7 @@ async function main() {
     create: {
       user: { connect: { id: syntyche.id } },
       value: 200.99,
+      description: 'Salary',
     },
   });
 
@@ -147,6 +148,7 @@ async function main() {
     create: {
       user: { connect: { id: syntyche.id } },
       value: 400.99,
+      description: 'Salary',
     },
   });
 
@@ -156,6 +158,7 @@ async function main() {
     create: {
       user: { connect: { id: taqqiq.id } },
       value: 2000,
+      description: 'Salary',
     },
   });
 
@@ -165,6 +168,7 @@ async function main() {
     create: {
       user: { connect: { id: taqqiq.id } },
       value: 1000,
+      description: 'Salary',
     },
   });
 
@@ -174,6 +178,7 @@ async function main() {
     create: {
       user: { connect: { id: taqqiq.id } },
       value: 20,
+      description: 'Salary',
     },
   });
 
@@ -183,6 +188,7 @@ async function main() {
     create: {
       user: { connect: { id: rosalinda.id } },
       value: 60,
+      description: 'Salary',
     },
   });
 
@@ -192,6 +198,7 @@ async function main() {
     create: {
       user: { connect: { id: rosalinda.id } },
       value: 6000,
+      description: 'Salary',
     },
   });
 

@@ -108,14 +108,14 @@ describe('Expense Endpoints', () => {
       expect(response.body.expense.isEssential).toEqual(true);
     });
 
-    it('PATCH /api/v1/expenses/1 should fail to update an expense by missing a value and category id', async () => {
+    it('PATCH /api/v1/expenses/1 should fail to update an expense by missing a value, category id, type, description and date', async () => {
       const response = await request
         .patch('/api/v1/expenses/1')
         .set({ Authorization: token });
       expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(response.body.expense).toBeFalsy();
       expect(response.body.err).toEqual(
-        'Por favor, informe um novo valor, tipo, categoria ou descrição para a despesa'
+        'Por favor, informe um novo valor, tipo, categoria, descrição ou data para a despesa'
       );
     });
 
@@ -181,6 +181,17 @@ describe('Expense Endpoints', () => {
       expect(response.statusCode).toEqual(StatusCodes.OK);
       expect(response.body.expense).toBeTruthy();
       expect(response.body.expense.description).toEqual('New description');
+    });
+
+    it('PATCH /api/v1/expenses/2 should successfully update the date of an expense created by the user', async () => {
+      const newDate = new Date();
+      const response = await request
+        .patch('/api/v1/expenses/2')
+        .send({ date: newDate })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.OK);
+      expect(response.body.expense).toBeTruthy();
+      expect(new Date(response.body.expense.date)).toEqual(newDate);
     });
 
     it('PATCH /api/v1/expenses/4 should fail to update the value of an expense created by another user', async () => {
@@ -338,14 +349,14 @@ describe('Expense Endpoints', () => {
       expect(response.body.expense.isEssential).toEqual(false);
     });
 
-    it('PATCH /api/v1/expenses/1 should fail to update an expense by missing a value and category id', async () => {
+    it('PATCH /api/v1/expenses/1 should fail to update an expense by missing a value, category id, description, type and date', async () => {
       const response = await request
         .patch('/api/v1/expenses/1')
         .set({ Authorization: token });
       expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(response.body.expense).toBeFalsy();
       expect(response.body.err).toEqual(
-        'Por favor, informe um novo valor, tipo, categoria ou descrição para a despesa'
+        'Por favor, informe um novo valor, tipo, categoria, descrição ou data para a despesa'
       );
     });
 
@@ -411,6 +422,17 @@ describe('Expense Endpoints', () => {
       expect(response.statusCode).toEqual(StatusCodes.OK);
       expect(response.body.expense).toBeTruthy();
       expect(response.body.expense.description).toEqual('New description');
+    });
+
+    it('PATCH /api/v1/expenses/4 should successfully update the date of an expense created by the user', async () => {
+      const newDate = new Date();
+      const response = await request
+        .patch('/api/v1/expenses/4')
+        .send({ date: newDate })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.OK);
+      expect(response.body.expense).toBeTruthy();
+      expect(new Date(response.body.expense.date)).toEqual(newDate);
     });
 
     it('PATCH /api/v1/expenses/1 should fail to update the value of an expense created by another user', async () => {
