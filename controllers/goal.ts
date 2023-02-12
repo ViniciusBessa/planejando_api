@@ -9,14 +9,7 @@ const prisma = new PrismaClient();
 const getAllGoals = asyncWrapper(
   async (req: Request, res: Response, next: NextFunction) => {
     const { user } = req;
-    const {
-      minValue,
-      maxValue,
-      minDate,
-      maxDate,
-      categoryId,
-      essentialExpenses,
-    } = req.query;
+    const { minValue, maxValue, categoryId, essentialExpenses } = req.query;
 
     const goals = await prisma.goal.findMany({
       where: {
@@ -28,10 +21,6 @@ const getAllGoals = asyncWrapper(
           essentialExpenses !== undefined
             ? Boolean(essentialExpenses)
             : undefined,
-        createdAt: {
-          gte: minDate ? new Date(minDate as string) : undefined,
-          lte: maxDate ? new Date(maxDate as string) : undefined,
-        },
         userId: user.role !== Role.ADMIN ? user.id : undefined,
         categoryId: Number(categoryId) || undefined,
       },
