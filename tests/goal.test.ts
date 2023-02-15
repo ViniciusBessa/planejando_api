@@ -1,6 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import supertest, { SuperTest, Test } from 'supertest';
 import app from '../app';
+import { currencyFormatter, MAX_VALUE, MIN_VALUE } from '../utils/currency';
 
 describe('Goal Endpoints', () => {
   const request: SuperTest<Test> = supertest(app);
@@ -54,6 +55,34 @@ describe('Goal Endpoints', () => {
       expect(response.body.err).toEqual('Por favor, informe o limite da meta');
     });
 
+    it('POST /api/v1/goals should fail to create a new goal by providing a value too small', async () => {
+      const response = await request
+        .post('/api/v1/goals')
+        .send({ value: -1, categoryId: 5 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.goal).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O limite de uma meta precisa ser superior a ${currencyFormatter.format(
+          MIN_VALUE
+        )}`
+      );
+    });
+
+    it('POST /api/v1/goals should fail to create a new goal by providing a value too large', async () => {
+      const response = await request
+        .post('/api/v1/goals')
+        .send({ value: 10000000000000000, categoryId: 5 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.goal).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O valor máximo para o limite de uma meta é de R$ ${currencyFormatter.format(
+          MAX_VALUE
+        )}`
+      );
+    });
+
     it('POST /api/v1/goals should fail to create a new goal by missing the category id', async () => {
       const response = await request
         .post('/api/v1/goals')
@@ -86,7 +115,7 @@ describe('Goal Endpoints', () => {
       expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(response.body.goal).toBeFalsy();
       expect(response.body.err).toEqual(
-        'Você só pode ter uma meta por categoria'
+        'Você só pode ter uma meta por categoria e tipo'
       );
     });
 
@@ -121,6 +150,34 @@ describe('Goal Endpoints', () => {
       expect(response.body.goal).toBeFalsy();
       expect(response.body.err).toEqual(
         'Nenhuma meta foi encontrada com o id 14'
+      );
+    });
+
+    it('PATCH /api/v1/goals/1 should fail to update a goal by providing a value too small', async () => {
+      const response = await request
+        .patch('/api/v1/goals/1')
+        .send({ value: -1 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.goal).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O limite de uma meta precisa ser superior a ${currencyFormatter.format(
+          MIN_VALUE
+        )}`
+      );
+    });
+
+    it('PATCH /api/v1/goals/1 should fail to update a goal by providing a value too large', async () => {
+      const response = await request
+        .patch('/api/v1/goals/1')
+        .send({ value: 10000000000000000, description: 'Description' })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.goal).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O valor máximo para o limite de uma meta é de R$ ${currencyFormatter.format(
+          MAX_VALUE
+        )}`
       );
     });
 
@@ -256,6 +313,34 @@ describe('Goal Endpoints', () => {
       expect(response.body.err).toEqual('Por favor, informe o limite da meta');
     });
 
+    it('POST /api/v1/goals should fail to create a new goal by providing a value too small', async () => {
+      const response = await request
+        .post('/api/v1/goals')
+        .send({ value: -1, categoryId: 5 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.goal).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O limite de uma meta precisa ser superior a ${currencyFormatter.format(
+          MIN_VALUE
+        )}`
+      );
+    });
+
+    it('POST /api/v1/goals should fail to create a new goal by providing a value too large', async () => {
+      const response = await request
+        .post('/api/v1/goals')
+        .send({ value: 10000000000000000, categoryId: 5 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.goal).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O valor máximo para o limite de uma meta é de R$ ${currencyFormatter.format(
+          MAX_VALUE
+        )}`
+      );
+    });
+
     it('POST /api/v1/goals should fail to create a new goal by missing the category id', async () => {
       const response = await request
         .post('/api/v1/goals')
@@ -288,7 +373,7 @@ describe('Goal Endpoints', () => {
       expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(response.body.goal).toBeFalsy();
       expect(response.body.err).toEqual(
-        'Você só pode ter uma meta por categoria'
+        'Você só pode ter uma meta por categoria e tipo'
       );
     });
 
@@ -366,6 +451,34 @@ describe('Goal Endpoints', () => {
       expect(response.statusCode).toEqual(StatusCodes.OK);
       expect(response.body.goal).toBeTruthy();
       expect(response.body.goal.category.title).toEqual('Educação');
+    });
+
+    it('PATCH /api/v1/goals/4 should fail to update a goal by providing a value too small', async () => {
+      const response = await request
+        .patch('/api/v1/goals/4')
+        .send({ value: -1 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.goal).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O limite de uma meta precisa ser superior a ${currencyFormatter.format(
+          MIN_VALUE
+        )}`
+      );
+    });
+
+    it('PATCH /api/v1/goals/4 should fail to update a goal by providing a value too large', async () => {
+      const response = await request
+        .patch('/api/v1/goals/4')
+        .send({ value: 10000000000000000, description: 'Description' })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.goal).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O valor máximo para o limite de uma meta é de R$ ${currencyFormatter.format(
+          MAX_VALUE
+        )}`
+      );
     });
 
     it('PATCH /api/v1/goals/1 should fail to update the value of a goal created by another user', async () => {

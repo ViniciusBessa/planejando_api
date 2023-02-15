@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { BadRequestError, ForbiddenError, NotFoundError } from '../errors';
 import asyncWrapper from '../middlewares/async-wrapper';
+import { MIN_VALUE, currencyFormatter, MAX_VALUE } from '../utils/currency';
 
 const prisma = new PrismaClient();
 
@@ -65,6 +66,18 @@ const createRevenue = asyncWrapper(
       throw new BadRequestError(
         'Por favor, informe uma descrição para a receita'
       );
+    } else if (value <= MIN_VALUE) {
+      throw new BadRequestError(
+        `O valor de uma receita precisa ser superior a ${currencyFormatter.format(
+          MIN_VALUE
+        )}`
+      );
+    } else if (value > MAX_VALUE) {
+      throw new BadRequestError(
+        `O valor máximo para uma receita é de R$ ${currencyFormatter.format(
+          MAX_VALUE
+        )}`
+      );
     }
     const revenue = await prisma.revenue.create({
       data: {
@@ -88,6 +101,18 @@ const updateRevenue = asyncWrapper(
     if (!value && !description && !date) {
       throw new BadRequestError(
         'Por favor, informe um novo valor, descrição ou data para a receita'
+      );
+    } else if (value <= MIN_VALUE) {
+      throw new BadRequestError(
+        `O valor de uma receita precisa ser superior a ${currencyFormatter.format(
+          MIN_VALUE
+        )}`
+      );
+    } else if (value > MAX_VALUE) {
+      throw new BadRequestError(
+        `O valor máximo para uma receita é de R$ ${currencyFormatter.format(
+          MAX_VALUE
+        )}`
       );
     }
     const revenue = await prisma.revenue.findFirst({

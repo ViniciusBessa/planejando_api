@@ -1,6 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import supertest, { SuperTest, Test } from 'supertest';
 import app from '../app';
+import { currencyFormatter, MIN_VALUE, MAX_VALUE } from '../utils/currency';
 
 describe('Expense Endpoints', () => {
   const request: SuperTest<Test> = supertest(app);
@@ -42,6 +43,34 @@ describe('Expense Endpoints', () => {
       expect(response.statusCode).toEqual(StatusCodes.OK);
       expect(response.body.expense).toBeTruthy();
       expect(response.body.expense.value).toEqual('2000');
+    });
+
+    it('POST /api/v1/expenses should fail to create a new expense by providing a value too small', async () => {
+      const response = await request
+        .post('/api/v1/expenses')
+        .send({ value: -1, description: 'Description' })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.expense).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O valor de uma despesa precisa ser superior a ${currencyFormatter.format(
+          MIN_VALUE
+        )}`
+      );
+    });
+
+    it('POST /api/v1/expenses should fail to create a new expense by providing a value too large', async () => {
+      const response = await request
+        .post('/api/v1/expenses')
+        .send({ value: 10000000000000000, description: 'Description' })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.expense).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O valor máximo para uma despesa é de R$ ${currencyFormatter.format(
+          MAX_VALUE
+        )}`
+      );
     });
 
     it('POST /api/v1/expenses should fail to create a new expense by missing the value', async () => {
@@ -140,6 +169,34 @@ describe('Expense Endpoints', () => {
       expect(response.body.expense).toBeFalsy();
       expect(response.body.err).toEqual(
         'Nenhuma categoria foi encontrada com o id 14'
+      );
+    });
+
+    it('PATCH /api/v1/expenses/1 should fail to update a expense by providing a value too small', async () => {
+      const response = await request
+        .patch('/api/v1/expenses/1')
+        .send({ value: -1 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.expense).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O valor de uma despesa precisa ser superior a ${currencyFormatter.format(
+          MIN_VALUE
+        )}`
+      );
+    });
+
+    it('PATCH /api/v1/expenses/1 should fail to create a new expense by providing a value too large', async () => {
+      const response = await request
+        .patch('/api/v1/expenses/1')
+        .send({ value: 10000000000000000, description: 'Description' })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.expense).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O valor máximo para uma despesa é de R$ ${currencyFormatter.format(
+          MAX_VALUE
+        )}`
       );
     });
 
@@ -286,6 +343,34 @@ describe('Expense Endpoints', () => {
       expect(response.body.expense.value).toEqual('2000');
     });
 
+    it('POST /api/v1/expenses should fail to create a new expense by providing a value too small', async () => {
+      const response = await request
+        .post('/api/v1/expenses')
+        .send({ value: -1, description: 'Description' })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.expense).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O valor de uma despesa precisa ser superior a ${currencyFormatter.format(
+          MIN_VALUE
+        )}`
+      );
+    });
+
+    it('POST /api/v1/expenses should fail to create a new expense by providing a value too large', async () => {
+      const response = await request
+        .post('/api/v1/expenses')
+        .send({ value: 10000000000000000, description: 'Description' })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.expense).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O valor máximo para uma despesa é de R$ ${currencyFormatter.format(
+          MAX_VALUE
+        )}`
+      );
+    });
+
     it('POST /api/v1/expenses should fail to create a new expense by missing the value', async () => {
       const response = await request
         .post('/api/v1/expenses')
@@ -381,6 +466,34 @@ describe('Expense Endpoints', () => {
       expect(response.body.expense).toBeFalsy();
       expect(response.body.err).toEqual(
         'Nenhuma categoria foi encontrada com o id 14'
+      );
+    });
+
+    it('PATCH /api/v1/expenses/4 should fail to update a expense by providing a value too small', async () => {
+      const response = await request
+        .patch('/api/v1/expenses/4')
+        .send({ value: -1 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.expense).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O valor de uma despesa precisa ser superior a ${currencyFormatter.format(
+          MIN_VALUE
+        )}`
+      );
+    });
+
+    it('PATCH /api/v1/expenses/4 should fail to create a new expense by providing a value too large', async () => {
+      const response = await request
+        .patch('/api/v1/expenses/4')
+        .send({ value: 10000000000000000, description: 'Description' })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.expense).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O valor máximo para uma despesa é de R$ ${currencyFormatter.format(
+          MAX_VALUE
+        )}`
       );
     });
 

@@ -1,6 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import supertest, { SuperTest, Test } from 'supertest';
 import app from '../app';
+import { currencyFormatter, MIN_VALUE, MAX_VALUE } from '../utils/currency';
 
 describe('Revenue Endpoints', () => {
   const request: SuperTest<Test> = supertest(app);
@@ -56,6 +57,34 @@ describe('Revenue Endpoints', () => {
       );
     });
 
+    it('POST /api/v1/revenues should fail to create a new revenue by providing a value too small', async () => {
+      const response = await request
+        .post('/api/v1/revenues')
+        .send({ value: -1, description: 'Description' })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.revenue).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O valor de uma receita precisa ser superior a ${currencyFormatter.format(
+          MIN_VALUE
+        )}`
+      );
+    });
+
+    it('POST /api/v1/revenues should fail to create a new revenue by providing a value too large', async () => {
+      const response = await request
+        .post('/api/v1/revenues')
+        .send({ value: 10000000000000000, description: 'Description' })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.revenue).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O valor máximo para uma receita é de R$ ${currencyFormatter.format(
+          MAX_VALUE
+        )}`
+      );
+    });
+
     it('POST /api/v1/revenues should fail to create a new revenue by missing the description', async () => {
       const response = await request
         .post('/api/v1/revenues')
@@ -98,6 +127,34 @@ describe('Revenue Endpoints', () => {
       expect(response.body.revenue).toBeFalsy();
       expect(response.body.err).toEqual(
         'Nenhuma receita foi encontrada com o id 14'
+      );
+    });
+
+    it('PATCH /api/v1/revenues/1 should fail to update a revenue by providing a value too small', async () => {
+      const response = await request
+        .patch('/api/v1/revenues/1')
+        .send({ value: -1 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.revenue).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O valor de uma receita precisa ser superior a ${currencyFormatter.format(
+          MIN_VALUE
+        )}`
+      );
+    });
+
+    it('PATCH /api/v1/revenues/1 should fail to create a new revenue by providing a value too large', async () => {
+      const response = await request
+        .patch('/api/v1/revenues/1')
+        .send({ value: 10000000000000000, description: 'Description' })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.revenue).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O valor máximo para uma receita é de R$ ${currencyFormatter.format(
+          MAX_VALUE
+        )}`
       );
     });
 
@@ -236,6 +293,34 @@ describe('Revenue Endpoints', () => {
       );
     });
 
+    it('POST /api/v1/revenues should fail to create a new revenue by providing a value too small', async () => {
+      const response = await request
+        .post('/api/v1/revenues')
+        .send({ value: -1, description: 'Description' })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.revenue).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O valor de uma receita precisa ser superior a ${currencyFormatter.format(
+          MIN_VALUE
+        )}`
+      );
+    });
+
+    it('POST /api/v1/revenues should fail to create a new revenue by providing a value too large', async () => {
+      const response = await request
+        .post('/api/v1/revenues')
+        .send({ value: 10000000000000000, description: 'Description' })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.revenue).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O valor máximo para uma receita é de R$ ${currencyFormatter.format(
+          MAX_VALUE
+        )}`
+      );
+    });
+
     it('POST /api/v1/revenues should fail to create a new revenue by missing the description', async () => {
       const response = await request
         .post('/api/v1/revenues')
@@ -278,6 +363,34 @@ describe('Revenue Endpoints', () => {
       expect(response.body.revenue).toBeFalsy();
       expect(response.body.err).toEqual(
         'Nenhuma receita foi encontrada com o id 14'
+      );
+    });
+
+    it('PATCH /api/v1/revenues/4 should fail to update a revenue by providing a value too small', async () => {
+      const response = await request
+        .patch('/api/v1/revenues/4')
+        .send({ value: -1 })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.revenue).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O valor de uma receita precisa ser superior a ${currencyFormatter.format(
+          MIN_VALUE
+        )}`
+      );
+    });
+
+    it('PATCH /api/v1/revenues/4 should fail to create a new revenue by providing a value too large', async () => {
+      const response = await request
+        .patch('/api/v1/revenues/4')
+        .send({ value: 10000000000000000, description: 'Description' })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.revenue).toBeFalsy();
+      expect(response.body.err).toEqual(
+        `O valor máximo para uma receita é de R$ ${currencyFormatter.format(
+          MAX_VALUE
+        )}`
       );
     });
 

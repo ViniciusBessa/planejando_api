@@ -3,14 +3,22 @@ import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { BadRequestError, ForbiddenError, NotFoundError } from '../errors';
 import asyncWrapper from '../middlewares/async-wrapper';
+import { MIN_VALUE, currencyFormatter, MAX_VALUE } from '../utils/currency';
 
 const prisma = new PrismaClient();
 
 const getAllExpenses = asyncWrapper(
   async (req: Request, res: Response, next: NextFunction) => {
     const { user } = req;
-    const { minValue, maxValue, isEssential, minDate, maxDate, categoryId } =
-      req.query;
+    const {
+      minValue,
+      maxValue,
+      isEssential,
+      minDate,
+      maxDate,
+      categoryId,
+      description,
+    } = req.query;
 
     const expenses = await prisma.expense.findMany({
       where: {
@@ -19,13 +27,16 @@ const getAllExpenses = asyncWrapper(
           lte: Number(maxValue) || undefined,
         },
         isEssential:
-          isEssential !== undefined ? Boolean(isEssential) : undefined,
+          isEssential !== undefined ? isEssential == 'true' : undefined,
         date: {
           gte: minDate ? new Date(minDate as string) : undefined,
           lte: maxDate ? new Date(maxDate as string) : undefined,
         },
         userId: user.role !== Role.ADMIN ? user.id : undefined,
         categoryId: Number(categoryId) || undefined,
+        description: {
+          search: description?.toString(),
+        },
       },
       include: { category: true, user: false },
     });
@@ -65,6 +76,18 @@ const createExpense = asyncWrapper(
       throw new BadRequestError(
         'Por favor, informe o valor e a descrição da despesa'
       );
+    } else if (value <= MIN_VALUE) {
+      throw new BadRequestError(
+        `O valor de uma despesa precisa ser superior a ${currencyFormatter.format(
+          MIN_VALUE
+        )}`
+      );
+    } else if (value > MAX_VALUE) {
+      throw new BadRequestError(
+        `O valor máximo para uma despesa é de R$ ${currencyFormatter.format(
+          MAX_VALUE
+        )}`
+      );
     } else if (!categoryId) {
       throw new BadRequestError('Por favor, informe a categoria da despesa');
     }
@@ -86,8 +109,7 @@ const createExpense = asyncWrapper(
         value,
         description,
         date: date ? new Date(date) : undefined,
-        isEssential:
-          isEssential !== undefined ? Boolean(isEssential) : undefined,
+        isEssential: isEssential !== undefined ? isEssential : undefined,
       },
       include: { category: true, user: false },
     });
@@ -110,6 +132,18 @@ const updateExpense = asyncWrapper(
     ) {
       throw new BadRequestError(
         'Por favor, informe um novo valor, tipo, categoria, descrição ou data para a despesa'
+      );
+    } else if (value <= MIN_VALUE) {
+      throw new BadRequestError(
+        `O valor de uma despesa precisa ser superior a ${currencyFormatter.format(
+          MIN_VALUE
+        )}`
+      );
+    } else if (value > MAX_VALUE) {
+      throw new BadRequestError(
+        `O valor máximo para uma despesa é de R$ ${currencyFormatter.format(
+          MAX_VALUE
+        )}`
       );
     }
 
@@ -147,8 +181,7 @@ const updateExpense = asyncWrapper(
         value,
         categoryId,
         description,
-        isEssential:
-          isEssential !== undefined ? Boolean(isEssential) : undefined,
+        isEssential: isEssential !== undefined ? isEssential : undefined,
         date: date ? new Date(date) : undefined,
       },
       include: { category: true, user: false },
