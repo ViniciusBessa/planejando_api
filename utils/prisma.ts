@@ -18,8 +18,8 @@ const getGoalTotalExpenses = async (
       WHERE "userId" = ${goal.userId}
       AND "isEssential" = ${goal.essentialExpenses}
       AND "categoryId" = ${goal.categoryId}
-      AND "date"::date BETWEEN ${startSearchDate}
-      AND ${endSearchDate}
+      AND "date"::date BETWEEN ${startSearchDate}::date
+      AND ${endSearchDate}::date
       GROUP BY "categoryId"
   `) as { total: number }[];
 
@@ -36,7 +36,7 @@ const getGoalTotalExpenses = async (
     AND "isEssential" = ${goal.essentialExpenses}
     AND "categoryId" = ${goal.categoryId}
     AND "date"::date BETWEEN date_trunc('month', now())::date
-    AND now()::date
+    AND (now() + INTERVAL '1 day')::date
     GROUP BY "categoryId"
   `) as { total: number }[];
 
