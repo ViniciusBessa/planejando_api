@@ -4,7 +4,7 @@
   "description": "Uma API para planejamento financeiro",
   "main": "server.ts",
   "scripts": {
-    "build": "tsc && npm run baseline && prisma migrate deploy && prisma generate && npm start",
+    "build": "tsc && prisma migrate deploy && prisma generate",
     "baseline": "prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > prisma/migrations/0_init/migration.sql && prisma migrate resolve --applied 0_init",
     "start": "node ./dist/server.js",
     "dev": "tsnd --files server.ts",
