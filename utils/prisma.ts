@@ -13,36 +13,36 @@ const getGoalTotalExpenses = async (
     const endSearchDate = new Date(endDate).toISOString().split('T')[0];
 
     const sumExpenses = (await prisma.$queryRaw`
-      SELECT SUM(value) as total
+      SELECT EXTRACT(MONTH FROM "date") as "month", SUM(value) as total
       FROM expenses
       WHERE "userId" = ${goal.userId}
       AND "isEssential" = ${goal.essentialExpenses}
       AND "categoryId" = ${goal.categoryId}
       AND "date"::date BETWEEN ${startSearchDate}::date
       AND ${endSearchDate}::date
-      GROUP BY "categoryId"
-  `) as { total: number }[];
+      GROUP BY "month"
+  `) as { month: number; total: number }[];
 
     return {
       ...goal,
-      sumExpenses: sumExpenses.length > 0 ? sumExpenses[0].total : 0,
+      sumExpenses,
     };
   }
 
   const sumExpenses = (await prisma.$queryRaw`
-    SELECT SUM(value) as total
+    SELECT EXTRACT(MONTH FROM "date") as "month", SUM(value) as total
     FROM expenses
     WHERE "userId" = ${goal.userId}
     AND "isEssential" = ${goal.essentialExpenses}
     AND "categoryId" = ${goal.categoryId}
     AND "date"::date BETWEEN date_trunc('month', now())::date
     AND (now() + INTERVAL '1 day')::date
-    GROUP BY "categoryId"
-  `) as { total: number }[];
+    GROUP BY "month"
+  `) as { month: number; total: number }[];
 
   return {
     ...goal,
-    sumExpenses: sumExpenses.length > 0 ? sumExpenses[0].total : 0,
+    sumExpenses,
   };
 };
 
