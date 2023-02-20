@@ -88,6 +88,10 @@ const createExpense = asyncWrapper(
           MAX_VALUE
         )}`
       );
+    } else if (description.length > 200) {
+      throw new BadRequestError(
+        'A descrição de uma despesa só pode ter até 200 caracteres'
+      );
     } else if (!categoryId) {
       throw new BadRequestError('Por favor, informe a categoria da despesa');
     }
@@ -144,6 +148,10 @@ const updateExpense = asyncWrapper(
         `O valor máximo para uma despesa é de R$ ${currencyFormatter.format(
           MAX_VALUE
         )}`
+      );
+    } else if (description && description.length > 200) {
+      throw new BadRequestError(
+        'A descrição de uma despesa só pode ter até 200 caracteres'
       );
     }
 

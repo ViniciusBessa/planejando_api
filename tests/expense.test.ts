@@ -48,7 +48,7 @@ describe('Expense Endpoints', () => {
     it('POST /api/v1/expenses should fail to create a new expense by providing a value too small', async () => {
       const response = await request
         .post('/api/v1/expenses')
-        .send({ value: -1, description: 'Description' })
+        .send({ value: -1, description: 'Description', categoryId: 5 })
         .set({ Authorization: token });
       expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(response.body.expense).toBeFalsy();
@@ -62,7 +62,11 @@ describe('Expense Endpoints', () => {
     it('POST /api/v1/expenses should fail to create a new expense by providing a value too large', async () => {
       const response = await request
         .post('/api/v1/expenses')
-        .send({ value: 10000000000000000, description: 'Description' })
+        .send({
+          value: 10000000000000000,
+          description: 'Description',
+          categoryId: 5,
+        })
         .set({ Authorization: token });
       expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(response.body.expense).toBeFalsy();
@@ -70,6 +74,22 @@ describe('Expense Endpoints', () => {
         `O valor máximo para uma despesa é de R$ ${currencyFormatter.format(
           MAX_VALUE
         )}`
+      );
+    });
+
+    it('POST /api/v1/expenses should fail to create a new expense by providing a description too long', async () => {
+      const response = await request
+        .post('/api/v1/expenses')
+        .send({
+          value: 1000,
+          description: 'Description'.repeat(20),
+          categoryId: 5,
+        })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.expense).toBeFalsy();
+      expect(response.body.err).toEqual(
+        'A descrição de uma despesa só pode ter até 200 caracteres'
       );
     });
 
@@ -172,7 +192,7 @@ describe('Expense Endpoints', () => {
       );
     });
 
-    it('PATCH /api/v1/expenses/1 should fail to update a expense by providing a value too small', async () => {
+    it('PATCH /api/v1/expenses/1 should fail to update an expense by providing a value too small', async () => {
       const response = await request
         .patch('/api/v1/expenses/1')
         .send({ value: -1 })
@@ -186,7 +206,7 @@ describe('Expense Endpoints', () => {
       );
     });
 
-    it('PATCH /api/v1/expenses/1 should fail to create a new expense by providing a value too large', async () => {
+    it('PATCH /api/v1/expenses/1 should fail to update an expense by providing a value too large', async () => {
       const response = await request
         .patch('/api/v1/expenses/1')
         .send({ value: 10000000000000000, description: 'Description' })
@@ -197,6 +217,18 @@ describe('Expense Endpoints', () => {
         `O valor máximo para uma despesa é de R$ ${currencyFormatter.format(
           MAX_VALUE
         )}`
+      );
+    });
+
+    it('PATCH /api/v1/expenses/1 should fail to update an expense by providing a description too long', async () => {
+      const response = await request
+        .patch('/api/v1/expenses/1')
+        .send({ description: 'Description'.repeat(30) })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.expense).toBeFalsy();
+      expect(response.body.err).toEqual(
+        'A descrição de uma despesa só pode ter até 200 caracteres'
       );
     });
 
@@ -346,7 +378,7 @@ describe('Expense Endpoints', () => {
     it('POST /api/v1/expenses should fail to create a new expense by providing a value too small', async () => {
       const response = await request
         .post('/api/v1/expenses')
-        .send({ value: -1, description: 'Description' })
+        .send({ value: -1, description: 'Description', categoryId: 5 })
         .set({ Authorization: token });
       expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(response.body.expense).toBeFalsy();
@@ -360,7 +392,11 @@ describe('Expense Endpoints', () => {
     it('POST /api/v1/expenses should fail to create a new expense by providing a value too large', async () => {
       const response = await request
         .post('/api/v1/expenses')
-        .send({ value: 10000000000000000, description: 'Description' })
+        .send({
+          value: 10000000000000000,
+          description: 'Description',
+          categoryId: 5,
+        })
         .set({ Authorization: token });
       expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
       expect(response.body.expense).toBeFalsy();
@@ -368,6 +404,22 @@ describe('Expense Endpoints', () => {
         `O valor máximo para uma despesa é de R$ ${currencyFormatter.format(
           MAX_VALUE
         )}`
+      );
+    });
+
+    it('POST /api/v1/expenses should fail to create a new expense by providing a description too long', async () => {
+      const response = await request
+        .post('/api/v1/expenses')
+        .send({
+          value: 1000,
+          description: 'Description'.repeat(20),
+          categoryId: 5,
+        })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.expense).toBeFalsy();
+      expect(response.body.err).toEqual(
+        'A descrição de uma despesa só pode ter até 200 caracteres'
       );
     });
 
@@ -483,7 +535,7 @@ describe('Expense Endpoints', () => {
       );
     });
 
-    it('PATCH /api/v1/expenses/4 should fail to create a new expense by providing a value too large', async () => {
+    it('PATCH /api/v1/expenses/4 should fail to updata an expense by providing a value too large', async () => {
       const response = await request
         .patch('/api/v1/expenses/4')
         .send({ value: 10000000000000000, description: 'Description' })
@@ -494,6 +546,18 @@ describe('Expense Endpoints', () => {
         `O valor máximo para uma despesa é de R$ ${currencyFormatter.format(
           MAX_VALUE
         )}`
+      );
+    });
+
+    it('PATCH /api/v1/expenses/4 should fail to update an expense by providing a description too long', async () => {
+      const response = await request
+        .patch('/api/v1/expenses/4')
+        .send({ description: 'Description'.repeat(30) })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.expense).toBeFalsy();
+      expect(response.body.err).toEqual(
+        'A descrição de uma despesa só pode ter até 200 caracteres'
       );
     });
 

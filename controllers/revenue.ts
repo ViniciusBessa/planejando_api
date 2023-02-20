@@ -78,6 +78,10 @@ const createRevenue = asyncWrapper(
           MAX_VALUE
         )}`
       );
+    } else if (description.length > 200) {
+      throw new BadRequestError(
+        'A descrição de uma receita só pode ter até 200 caracteres'
+      );
     }
     const revenue = await prisma.revenue.create({
       data: {
@@ -113,6 +117,10 @@ const updateRevenue = asyncWrapper(
         `O valor máximo para uma receita é de R$ ${currencyFormatter.format(
           MAX_VALUE
         )}`
+      );
+    } else if (description && description.length > 200) {
+      throw new BadRequestError(
+        'A descrição de uma receita só pode ter até 200 caracteres'
       );
     }
     const revenue = await prisma.revenue.findFirst({

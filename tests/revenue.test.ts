@@ -85,6 +85,21 @@ describe('Revenue Endpoints', () => {
       );
     });
 
+    it('POST /api/v1/revenues should fail to create a new revenue by providing a description too long', async () => {
+      const response = await request
+        .post('/api/v1/revenues')
+        .send({
+          value: 1000,
+          description: 'Description'.repeat(20),
+        })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.revenue).toBeFalsy();
+      expect(response.body.err).toEqual(
+        'A descrição de uma receita só pode ter até 200 caracteres'
+      );
+    });
+
     it('POST /api/v1/revenues should fail to create a new revenue by missing the description', async () => {
       const response = await request
         .post('/api/v1/revenues')
@@ -144,7 +159,7 @@ describe('Revenue Endpoints', () => {
       );
     });
 
-    it('PATCH /api/v1/revenues/1 should fail to create a new revenue by providing a value too large', async () => {
+    it('PATCH /api/v1/revenues/1 should fail to update a revenue by providing a value too large', async () => {
       const response = await request
         .patch('/api/v1/revenues/1')
         .send({ value: 10000000000000000, description: 'Description' })
@@ -155,6 +170,18 @@ describe('Revenue Endpoints', () => {
         `O valor máximo para uma receita é de R$ ${currencyFormatter.format(
           MAX_VALUE
         )}`
+      );
+    });
+
+    it('PATCH /api/v1/revenues/1 should fail to update a revenue by providing a description too long', async () => {
+      const response = await request
+        .patch('/api/v1/revenues/1')
+        .send({ description: 'Description'.repeat(30) })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.revenue).toBeFalsy();
+      expect(response.body.err).toEqual(
+        'A descrição de uma receita só pode ter até 200 caracteres'
       );
     });
 
@@ -321,6 +348,21 @@ describe('Revenue Endpoints', () => {
       );
     });
 
+    it('POST /api/v1/revenues should fail to create a new revenue by providing a description too long', async () => {
+      const response = await request
+        .post('/api/v1/revenues')
+        .send({
+          value: 1000,
+          description: 'Description'.repeat(20),
+        })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.revenue).toBeFalsy();
+      expect(response.body.err).toEqual(
+        'A descrição de uma receita só pode ter até 200 caracteres'
+      );
+    });
+
     it('POST /api/v1/revenues should fail to create a new revenue by missing the description', async () => {
       const response = await request
         .post('/api/v1/revenues')
@@ -391,6 +433,18 @@ describe('Revenue Endpoints', () => {
         `O valor máximo para uma receita é de R$ ${currencyFormatter.format(
           MAX_VALUE
         )}`
+      );
+    });
+
+    it('PATCH /api/v1/revenues/4 should fail to update a revenue by providing a description too long', async () => {
+      const response = await request
+        .patch('/api/v1/revenues/4')
+        .send({ description: 'Description'.repeat(30) })
+        .set({ Authorization: token });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.revenue).toBeFalsy();
+      expect(response.body.err).toEqual(
+        'A descrição de uma receita só pode ter até 200 caracteres'
       );
     });
 
