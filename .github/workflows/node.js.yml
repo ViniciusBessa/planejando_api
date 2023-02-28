@@ -47,3 +47,4 @@ jobs:
     - run: npm test
       env:
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+        JWT_SECRET: jwt_secret_token
