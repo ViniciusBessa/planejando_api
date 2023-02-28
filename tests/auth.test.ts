@@ -156,6 +156,38 @@ describe('Auth Endpoints', () => {
       );
     });
 
+    it('POST /api/v1/auth/login should fail to login by not providing an email', async () => {
+      const response = await request.post('/api/v1/auth/login').send({
+        password: 'password',
+      });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.user).toBeFalsy();
+      expect(response.body.token).toBeFalsy();
+      expect(response.body.err).toEqual('Por favor, informe o seu e-mail');
+    });
+
+    it('POST /api/v1/auth/login should fail to login by providing an invalid email', async () => {
+      const email = 'invalidEmail@';
+      const response = await request.post('/api/v1/auth/login').send({
+        email,
+        password: 'password',
+      });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.user).toBeFalsy();
+      expect(response.body.token).toBeFalsy();
+      expect(response.body.err).toEqual(`O e-mail ${email} está incorreto`);
+    });
+
+    it('POST /api/v1/auth/login should fail to login by not providing a password', async () => {
+      const response = await request.post('/api/v1/auth/login').send({
+        email: 'test2@gmail.com',
+      });
+      expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+      expect(response.body.user).toBeFalsy();
+      expect(response.body.token).toBeFalsy();
+      expect(response.body.err).toEqual('Por favor, informe a sua senha');
+    });
+
     it('POST /api/v1/auth/login should fail to login by incorrect password', async () => {
       const response = await request.post('/api/v1/auth/login').send({
         email: 'taqqiq@gmail.com',

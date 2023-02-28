@@ -55,6 +55,15 @@ const registerUser = asyncWrapper(
 const loginUser = asyncWrapper(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
+
+    // Validating the email and password
+    if (!email) {
+      throw new BadRequestError('Por favor, informe o seu e-mail');
+    } else if (!EMAIL_REGEX.test(email)) {
+      throw new BadRequestError(`O e-mail ${email} está incorreto`);
+    } else if (!password) {
+      throw new BadRequestError('Por favor, informe a sua senha');
+    }
     const user = await prisma.user.findFirst({ where: { email } });
 
     if (!user) {
