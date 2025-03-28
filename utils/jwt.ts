@@ -15,7 +15,7 @@ const getUserPayload = async (user: User): Promise<UserPayload> => {
 
 const createToken = async (userPayload: UserPayload): Promise<string> => {
   const token = jwt.sign(userPayload, process.env.JWT_SECRET as string, {
-    expiresIn: process.env.JWT_EXPIRES_IN || '30d',
+    expiresIn: (process.env.JWT_EXPIRES_IN as any) || '30d',
   });
   return token;
 };
